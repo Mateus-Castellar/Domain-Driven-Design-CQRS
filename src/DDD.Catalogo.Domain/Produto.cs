@@ -10,6 +10,7 @@ namespace DDD.Catalogo.Domain
         public decimal Valor { get; private set; }
         public DateTime DataCadastro { get; private set; }
         public string Imagem { get; private set; }
+        public Dimensoes Dimensoes { get; private set; }
         public int QuantidadeEstoque { get; private set; }
 
         //EfCore Relation
@@ -22,7 +23,8 @@ namespace DDD.Catalogo.Domain
                        decimal valor,
                        Guid categoriaId,
                        DateTime dataCadastro,
-                       string imagem)
+                       string imagem,
+                       Dimensoes dimensoes)
         {
             Nome = nome;
             Descricao = descricao;
@@ -31,6 +33,7 @@ namespace DDD.Catalogo.Domain
             CategoriaId = categoriaId;
             DataCadastro = dataCadastro;
             Imagem = imagem;
+            Dimensoes = dimensoes;
 
             Validar();
         }
