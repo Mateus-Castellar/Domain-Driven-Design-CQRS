@@ -11,11 +11,16 @@ namespace DDD.Catalogo.Domain
         {
             Nome = nome;
             Codigo = codigo;
+
+            Validar();
         }
 
-        public override string ToString()
+        public override string ToString() => $"{Nome} - {Codigo}";
+
+        public void Validar()
         {
-            return $"{Nome} - {Codigo}";
+            Validacoes.ValidarSeVazio(Nome, "O campo Nome do produto não pode estar vazio");
+            Validacoes.ValidarSeIgual(Codigo, 0, "O campo Codigo não pode ser igual a 0");
         }
     }
 }

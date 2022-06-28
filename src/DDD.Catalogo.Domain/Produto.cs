@@ -31,6 +31,8 @@ namespace DDD.Catalogo.Domain
             CategoriaId = categoriaId;
             DataCadastro = dataCadastro;
             Imagem = imagem;
+
+            Validar();
         }
 
         public void Ativar() => Ativo = true;
@@ -43,13 +45,20 @@ namespace DDD.Catalogo.Domain
             CategoriaId = categoria.Id;
         }
 
-        public void AlterarDescricaoProduto(string descicao) => Descricao = descicao;
+        public void AlterarDescricaoProduto(string descicao)
+        {
+            Validacoes.ValidarSeVazio(descicao, "A descrição não pode ser vazia");
+            Descricao = descicao;
+        }
 
         public void DebitarEstoque(int quantidade)
         {
             //caso o numero a ser debitado venha negativo (ex: debite -10 peças)
             if (quantidade < 0)
                 quantidade *= -1;
+
+            if (VerficarEstoque(quantidade) is false)
+                throw new DomainException("Estoque insuficiente");
 
             QuantidadeEstoque -= quantidade;
         }
@@ -58,6 +67,13 @@ namespace DDD.Catalogo.Domain
 
         public bool VerficarEstoque(int quantidadeVerficar) => QuantidadeEstoque >= quantidadeVerficar;
 
-        public void Validar() { }
+        public void Validar()
+        {
+            Validacoes.ValidarSeVazio(Nome, "O campo Nome do produto não pode estar vazio");
+            Validacoes.ValidarSeVazio(Descricao, "O campo Descricao do produto não pode estar vazio");
+            Validacoes.ValidarSeIgual(CategoriaId, Guid.Empty, "O campo CategoriaId do produto não pode estar vazio");
+            Validacoes.ValidarSeMenorQue(Valor, 1, "O campo Valor do produto não pode se menor igual a 0");
+            Validacoes.ValidarSeVazio(Imagem, "O campo Imagem do produto não pode estar vazio");
+        }
     }
 }
