@@ -1,4 +1,5 @@
-﻿using DDD.Core.Data;
+﻿using DDD.Catalogo.Domain.Entities;
+using DDD.Core.Data;
 
 namespace DDD.Catalogo.Domain
 {

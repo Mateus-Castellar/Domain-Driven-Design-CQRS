@@ -1,4 +1,4 @@
-﻿using DDD.Catalogo.Domain;
+﻿using DDD.Catalogo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

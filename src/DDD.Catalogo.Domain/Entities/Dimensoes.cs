@@ -1,6 +1,6 @@
 ﻿using DDD.Core.DomainObjects;
 
-namespace DDD.Catalogo.Domain
+namespace DDD.Catalogo.Domain.Entities
 {
     public class Dimensoes
     {
