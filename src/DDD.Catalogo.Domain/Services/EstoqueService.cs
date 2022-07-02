@@ -1,18 +1,23 @@
-﻿namespace DDD.Catalogo.Domain.Services
+﻿using DDD.Catalogo.Domain.Events;
+using DDD.Core.Bus;
+
+namespace DDD.Catalogo.Domain.Services
 {
     public interface IEstoqueService : IDisposable
     {
-        Task<bool> DebitarEstoque(Guid produtoId, int qunatidade);
-        Task<bool> ReporEstoque(Guid produtoId, int qunatidade);
+        Task<bool> DebitarEstoque(Guid produtoId, int quantidade);
+        Task<bool> ReporEstoque(Guid produtoId, int quantidade);
     }
 
     public class EstoqueService : IEstoqueService
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IMediatrHandler _bus;
 
-        public EstoqueService(IProdutoRepository produtoRepository)
+        public EstoqueService(IProdutoRepository produtoRepository, IMediatrHandler bus)
         {
             _produtoRepository = produtoRepository;
+            _bus = bus;
         }
 
         public async Task<bool> DebitarEstoque(Guid produtoId, int quantidade)
@@ -26,6 +31,12 @@
                 return false;
 
             produto.DebitarEstoque(quantidade);
+
+            if (produto.QuantidadeEstoque <= 10)
+            {
+                //avisar que a quantidade de estoque esta baixa..
+                await _bus.PublicarEvento(new ProdutoEstoqueAbaixoEvent(produto.Id, produto.QuantidadeEstoque));
+            }
 
             //atualiza a quantidade no banco...
             _produtoRepository.Atualizar(produto);
