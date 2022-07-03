@@ -13,9 +13,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Base de dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-#region Base de dados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
