@@ -3,6 +3,7 @@ using DDD.Catalogo.Application.Services;
 using DDD.Catalogo.Data;
 using DDD.Catalogo.Data.Repository;
 using DDD.Catalogo.Domain;
+using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Bus;
 using DDD.WebApp.Mvc.Data;
@@ -30,6 +31,9 @@ builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<CatalogoContext>();
+
+//eventos
+builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
 #endregion
 
 #region Identity
@@ -61,6 +65,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Vitrine}/{action=Index}/{id?}");
 app.MapRazorPages();
 app.Run();
