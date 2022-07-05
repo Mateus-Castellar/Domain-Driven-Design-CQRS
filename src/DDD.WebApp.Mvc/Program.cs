@@ -6,6 +6,7 @@ using DDD.Catalogo.Domain;
 using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Bus;
+using DDD.Vendas.Application.Commands;
 using DDD.WebApp.Mvc.Data;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<CatalogoContext>();
 
 //eventos
 builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
+builder.Services.AddScoped<IRequestHandler<AdicionarItemPedidoCommand, bool>, PedidoCommandHandler>();
 #endregion
 
 #region Identity
