@@ -13,15 +13,15 @@ namespace DDD.Vendas.Domain.Entities
         public DateTime DataCadastro { get; private set; }
         public PedidoStatus PedidoStatus { get; private set; }
 
-        private readonly List<Pedidoitem> _pedidoitems;
-        public IReadOnlyCollection<Pedidoitem> Pedidoitems => _pedidoitems;
+        private readonly List<PedidoItem> _pedidoItems;
+        public IReadOnlyCollection<PedidoItem> PedidoItems => _pedidoItems;
 
         //Ef Core Relation
         public Cupom Cupom { get; private set; }
 
         protected Pedido()
         {
-            _pedidoitems = new();
+            _pedidoItems = new();
         }
 
         public Pedido(Guid clienteId,
@@ -33,15 +33,15 @@ namespace DDD.Vendas.Domain.Entities
             CupomUtilizado = cupomUtilizado;
             Desconto = desconto;
             ValorTotal = valorTotal;
-            _pedidoitems = new();
+            _pedidoItems = new();
         }
 
-        public bool PedidoItemExistente(Pedidoitem pedidoitem) =>
-            _pedidoitems.Any(p => p.ProdutoId == pedidoitem.ProdutoId);
+        public bool PedidoItemExistente(PedidoItem pedidoitem) =>
+            _pedidoItems.Any(p => p.ProdutoId == pedidoitem.ProdutoId);
 
         public void CalcularValorPedido()
         {
-            ValorTotal = Pedidoitems.Sum(p => p.CalcularValor());
+            ValorTotal = PedidoItems.Sum(p => p.CalcularValor());
             CalcularValorTotalComDesconto();
         }
 
@@ -81,7 +81,7 @@ namespace DDD.Vendas.Domain.Entities
             Desconto = desconto;
         }
 
-        public void AdicionarItem(Pedidoitem item)
+        public void AdicionarItem(PedidoItem item)
         {
             if (item.EhValido() is false)
                 return;
@@ -90,48 +90,48 @@ namespace DDD.Vendas.Domain.Entities
 
             if (PedidoItemExistente(item))
             {
-                var itemExistente = _pedidoitems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
+                var itemExistente = _pedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
                 itemExistente.AdicionarUnidades(item.Quantidade);
                 item = itemExistente;
 
-                _pedidoitems.Remove(itemExistente);
+                _pedidoItems.Remove(itemExistente);
             }
 
             item.CalcularValor();
-            _pedidoitems.Add(item);
+            _pedidoItems.Add(item);
             CalcularValorPedido();
         }
 
-        public void RemoverItem(Pedidoitem item)
+        public void RemoverItem(PedidoItem item)
         {
             if (item.EhValido() is false)
                 return;
 
-            var itemExistente = Pedidoitems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
+            var itemExistente = PedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
 
             if (itemExistente is null)
                 throw new DomainException("O item não pertence ao seu pedido");
 
-            _pedidoitems.Remove(itemExistente);
+            _pedidoItems.Remove(itemExistente);
             CalcularValorPedido();
         }
 
-        public void AtualizarItem(Pedidoitem item)
+        public void AtualizarItem(PedidoItem item)
         {
             if (item.EhValido() is false)
                 return;
 
-            var itemExistente = Pedidoitems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
+            var itemExistente = PedidoItems.FirstOrDefault(p => p.ProdutoId == item.ProdutoId);
 
             if (itemExistente is null)
                 throw new DomainException("O item não pertence ao seu pedido");
 
-            _pedidoitems.Remove(itemExistente);
-            _pedidoitems.Add(item);
+            _pedidoItems.Remove(itemExistente);
+            _pedidoItems.Add(item);
             CalcularValorPedido();
         }
 
-        public void AtualizarUnidades(Pedidoitem item, int unidades)
+        public void AtualizarUnidades(PedidoItem item, int unidades)
         {
             item.AtualizarUnidades(unidades);
             AtualizarItem(item);

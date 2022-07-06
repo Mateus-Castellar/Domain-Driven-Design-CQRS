@@ -2,7 +2,7 @@
 
 namespace DDD.Vendas.Domain.Entities
 {
-    public class Pedidoitem : Entity
+    public class PedidoItem : Entity
     {
         public Guid PedidoId { get; private set; }
         public Guid ProdutoId { get; private set; }
@@ -12,9 +12,9 @@ namespace DDD.Vendas.Domain.Entities
 
         //Ef Core Relation
         public Pedido Pedido { get; private set; }
-        protected Pedidoitem() { }
+        protected PedidoItem() { }
 
-        public Pedidoitem(Guid produtoId,
+        public PedidoItem(Guid produtoId,
                           string produtoNome,
                           int quantidade,
                           decimal valorUnitario)

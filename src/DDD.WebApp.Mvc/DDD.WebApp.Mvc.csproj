@@ -22,6 +22,8 @@
     <ProjectReference Include="..\DDD.Catalogo.Data\DDD.Catalogo.Data.csproj" />
     <ProjectReference Include="..\DDD.Catalogo.Domain\DDD.Catalogo.Domain.csproj" />
     <ProjectReference Include="..\DDD.Core\DDD.Core.csproj" />
+    <ProjectReference Include="..\DDD.Vendas.Application\DDD.Vendas.Application.csproj" />
+    <ProjectReference Include="..\DDD.Vendas.Data\DDD.Vendas.Data.csproj" />
   </ItemGroup>
 
 </Project>

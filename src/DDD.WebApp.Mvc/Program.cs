@@ -7,6 +7,9 @@ using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Bus;
 using DDD.Vendas.Application.Commands;
+using DDD.Vendas.Data;
+using DDD.Vendas.Data.Repository;
+using DDD.Vendas.Domain;
 using DDD.WebApp.Mvc.Data;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -23,15 +26,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDbContext<CatalogoContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddDbContext<VendasContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #endregion
 
 #region Injecao de dependencias
-builder.Services.AddScoped<IMediatrHandler, MediatrHandler>();
-builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<CatalogoContext>();
+builder.Services.AddScoped<VendasContext>();
 
 //eventos
 builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
