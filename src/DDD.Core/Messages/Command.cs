@@ -17,6 +17,5 @@ namespace DDD.Core.Messages
         {
             throw new NotImplementedException();
         }
-
     }
 }

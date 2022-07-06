@@ -1,6 +1,8 @@
 ﻿using DDD.Catalogo.Application.Services;
-using DDD.Core.Bus;
+using DDD.Core.Communication.Mediator;
+using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DDD.WebApp.Mvc.Controllers
@@ -10,7 +12,9 @@ namespace DDD.WebApp.Mvc.Controllers
         private readonly IProdutoService _produtoService;
         private readonly IMediatorHandler _mediatrHandler;
 
-        public CarrinhoController(IProdutoService produtoService, IMediatorHandler mediatrHandler)
+        public CarrinhoController(INotificationHandler<DomainNotification> notifications,
+                                  IProdutoService produtoService,
+                                  IMediatorHandler mediatrHandler) : base(notifications, mediatrHandler)
         {
             _produtoService = produtoService;
             _mediatrHandler = mediatrHandler;
@@ -39,8 +43,11 @@ namespace DDD.WebApp.Mvc.Controllers
             var command = new AdicionarItemPedidoCommand(ClientId, produto.Id, produto.Nome, quantidade, produto.Valor);
             await _mediatrHandler.EnviarComando(command);
 
-            //caso deu errado
-            TempData["Erro"] = "Produto Indisponível";
+            if (OperacaoValida())
+                return RedirectToAction("Index");
+
+            //caso de errado
+            TempData["Erros"] = ObterMensagensErro();
             return RedirectToAction("ProdutoDetalhe", "Vitrine", new { id });
         }
     }

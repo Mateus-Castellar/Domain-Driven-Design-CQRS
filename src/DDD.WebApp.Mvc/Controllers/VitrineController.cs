@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DDD.WebApp.Mvc.Controllers
 {
-    public class VitrineController : CoreController
+    public class VitrineController : Controller
     {
         private readonly IProdutoService _produtoService;
 

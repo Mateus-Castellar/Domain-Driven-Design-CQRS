@@ -1,5 +1,5 @@
 ﻿using DDD.Catalogo.Domain.Events;
-using DDD.Core.Bus;
+using DDD.Core.Communication.Mediator;
 
 namespace DDD.Catalogo.Domain.Services
 {

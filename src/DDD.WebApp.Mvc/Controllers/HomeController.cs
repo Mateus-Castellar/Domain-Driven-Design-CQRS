@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace DDD.WebApp.Mvc.Controllers
 {
-    public class HomeController : CoreController
+    public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 

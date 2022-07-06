@@ -1,6 +1,4 @@
-﻿using DDD.Core.Messages;
-
-namespace DDD.Core.DomainObjects
+﻿namespace DDD.Core.Messages.CommonMessages.DomainEvents
 {
     public class DomainEvent : Event
     {

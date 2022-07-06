@@ -1,4 +1,6 @@
-﻿using DDD.Core.Messages;
+﻿using DDD.Core.Communication.Mediator;
+using DDD.Core.Messages;
+using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Domain;
 using DDD.Vendas.Domain.Entities;
 using MediatR;
@@ -7,11 +9,14 @@ namespace DDD.Vendas.Application.Commands
 {
     public class PedidoCommandHandler : IRequestHandler<AdicionarItemPedidoCommand, bool>
     {
-        public IPedidoRepository _pedidoRepository;
+        private readonly IPedidoRepository _pedidoRepository;
+        private readonly IMediatorHandler _mediatorHandler;
 
-        public PedidoCommandHandler(IPedidoRepository pedidoRepository)
+        public PedidoCommandHandler(IPedidoRepository pedidoRepository,
+                                    IMediatorHandler mediatorHandler)
         {
             _pedidoRepository = pedidoRepository;
+            _mediatorHandler = mediatorHandler;
         }
 
         public async Task<bool> Handle(AdicionarItemPedidoCommand message, CancellationToken cancellationToken)
@@ -44,14 +49,15 @@ namespace DDD.Vendas.Application.Commands
             return await _pedidoRepository.UnitOfWork.Commit();
         }
 
-        private static bool ValidarComando(Command message)
+        private bool ValidarComando(Command message)
         {
             if (message.EhValido())
                 return true;
 
             foreach (var error in message.ValidationResult.Errors)
             {
-                //lancar um evento de erro (não é uma exception)
+                //lancar um evento de erro (não é uma exception)  
+                _mediatorHandler.PublicarNotificacao(new DomainNotification(message.MessageType, error.ErrorMessage));
             }
 
             return false;

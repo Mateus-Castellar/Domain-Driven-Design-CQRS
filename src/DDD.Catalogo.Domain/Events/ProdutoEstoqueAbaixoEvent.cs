@@ -1,4 +1,4 @@
-﻿using DDD.Core.DomainObjects;
+﻿using DDD.Core.Messages.CommonMessages.DomainEvents;
 
 namespace DDD.Catalogo.Domain.Events
 {
