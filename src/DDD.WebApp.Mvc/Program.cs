@@ -8,6 +8,7 @@ using DDD.Catalogo.Domain.Services;
 using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Commands;
+using DDD.Vendas.Application.Events;
 using DDD.Vendas.Data;
 using DDD.Vendas.Data.Repository;
 using DDD.Vendas.Domain;
@@ -36,8 +37,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Injecao de dependencias
 builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
 builder.Services.AddScoped<IRequestHandler<AdicionarItemPedidoCommand, bool>, PedidoCommandHandler>();
+
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoRascunhoIniciadoEvent>, PedidoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoAtualizadoEvent>, PedidoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoItemAdicionadoEvent>, PedidoEventHandler>();
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();

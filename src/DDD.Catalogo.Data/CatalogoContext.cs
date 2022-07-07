@@ -1,5 +1,6 @@
 ﻿using DDD.Catalogo.Domain.Entities;
 using DDD.Core.Data;
+using DDD.Core.Messages;
 using Microsoft.EntityFrameworkCore;
 
 namespace DDD.Catalogo.Data
@@ -20,6 +21,7 @@ namespace DDD.Catalogo.Data
                 .Where(p => p.ClrType == typeof(string))))
                 property.SetColumnType("varchar(100)");
 
+            modelBuilder.Ignore<Event>();
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogoContext).Assembly);
         }

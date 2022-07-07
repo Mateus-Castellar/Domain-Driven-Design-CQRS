@@ -1,6 +1,7 @@
 ﻿using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages;
 using DDD.Core.Messages.CommonMessages.Notifications;
+using DDD.Vendas.Application.Events;
 using DDD.Vendas.Domain;
 using DDD.Vendas.Domain.Entities;
 using MediatR;
@@ -32,7 +33,9 @@ namespace DDD.Vendas.Application.Commands
                 //se e um novo pedido...
                 pedido = Pedido.PedidoFactory.NovoPedidoRascunho(message.ClienteId);
                 pedido.AdicionarItem(pedidoItem);
-                _pedidoRepository.Adicionar(pedido);
+
+                _pedidoRepository.Adicionar(pedido);//coloca o dado em memoria no EfCore
+                pedido.AdicionarEvento(new PedidoRascunhoIniciadoEvent(message.ClienteId, pedido.Id));
             }
             else
             {
@@ -44,7 +47,12 @@ namespace DDD.Vendas.Application.Commands
                     _pedidoRepository.AtualizarItem(pedido.PedidoItems.FirstOrDefault(p => p.ProdutoId == pedidoItem.ProdutoId));
                 else
                     _pedidoRepository.AdicionarItem(pedidoItem);
+
+                pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
             }
+
+            pedido.AdicionarEvento(new PedidoItemAdicionadoEvent(pedido.ClienteId, pedido.Id, message.ProdutoId,
+                message.Nome, message.ValorUnitario, message.Quantidade));
 
             return await _pedidoRepository.UnitOfWork.Commit();
         }

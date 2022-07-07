@@ -1,4 +1,5 @@
-﻿using DDD.Core.Data;
+﻿using DDD.Core.Communication.Mediator;
+using DDD.Core.Data;
 using DDD.Core.Messages;
 using DDD.Vendas.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,13 @@ namespace DDD.Vendas.Data
 {
     public class VendasContext : DbContext, IUnitOfWork
     {
-        public VendasContext(DbContextOptions<VendasContext> options) : base(options)
-        { }
+        private readonly IMediatorHandler _mediatorHandler;
+
+        public VendasContext(DbContextOptions<VendasContext> options,
+                             IMediatorHandler mediatorHandler) : base(options)
+        {
+            _mediatorHandler = mediatorHandler;
+        }
 
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<PedidoItem> PedidoItems { get; set; }
@@ -42,6 +48,7 @@ namespace DDD.Vendas.Data
                     entry.Property("DataCadastro").IsModified = false;
             }
 
+            await _mediatorHandler.PublicarEventos(this);
             return await base.SaveChangesAsync() > 0;
         }
     }
