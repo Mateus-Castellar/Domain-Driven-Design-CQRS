@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DDD.Core\DDD.Core.csproj" />
     <ProjectReference Include="..\DDD.Vendas.Domain\DDD.Vendas.Domain.csproj" />
   </ItemGroup>

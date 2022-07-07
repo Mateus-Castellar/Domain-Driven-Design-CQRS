@@ -2,6 +2,7 @@
 using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Commands;
+using DDD.Vendas.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,18 +12,22 @@ namespace DDD.WebApp.Mvc.Controllers
     {
         private readonly IProdutoService _produtoService;
         private readonly IMediatorHandler _mediatrHandler;
+        private readonly IPedidosQueries _pedidoQueries;
 
         public CarrinhoController(INotificationHandler<DomainNotification> notifications,
                                   IProdutoService produtoService,
+                                  IPedidosQueries pedidoQueries,
                                   IMediatorHandler mediatrHandler) : base(notifications, mediatrHandler)
         {
             _produtoService = produtoService;
+            _pedidoQueries = pedidoQueries;
             _mediatrHandler = mediatrHandler;
         }
 
-        public IActionResult Index()
+        [Route("meu-carrinho")]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
         }
 
         [HttpPost]
@@ -40,7 +45,7 @@ namespace DDD.WebApp.Mvc.Controllers
                 return RedirectToAction("ProdutoDetalhe", "Vitrine", new { id });
             }
 
-            var command = new AdicionarItemPedidoCommand(ClientId, produto.Id, produto.Nome, quantidade, produto.Valor);
+            var command = new AdicionarItemPedidoCommand(ClienteId, produto.Id, produto.Nome, quantidade, produto.Valor);
             await _mediatrHandler.EnviarComando(command);
 
             if (OperacaoValida())
@@ -50,5 +55,55 @@ namespace DDD.WebApp.Mvc.Controllers
             TempData["Erros"] = ObterMensagensErro();
             return RedirectToAction("ProdutoDetalhe", "Vitrine", new { id });
         }
+
+        //[HttpPost]
+        //[Route("remover-item")]
+        //public async Task<IActionResult> RemoverItem(Guid id)
+        //{
+        //    var produto = await _produtoService.ObterPorId(id);
+
+        //    if (produto is null)
+        //        return BadRequest();
+
+        //    var command = new RemoverItemPedidoCommand(ClienteId, id);
+        //    await _mediatrHandler.EnviarComando(command);
+
+        //    if (OperacaoValida())
+        //        return RedirectToAction("Index");
+
+        //    return View("Index", await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
+
+        //}
+
+        //[HttpPost]
+        //[Route("atualizar-item")]
+        //public async Task<IActionResult> AtualizarItem(Guid id, int quantidade)
+        //{
+        //    var produto = await _produtoService.ObterPorId(id);
+
+        //    if (produto is null)
+        //        return BadRequest();
+
+        //    var command = new AtualizarItemCommand(ClienteId, id, quantidade);
+        //    await _mediatrHandler.EnviarComando(command);
+
+        //    if (OperacaoValida())
+        //        return RedirectToAction("Index");
+
+        //    return View("Index", await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
+        //}
+
+        //[HttpPost]
+        //[Route("aplicar-cupom")]
+        //public async Task<IActionResult> AplicarCupom(string cupomCodigo)
+        //{
+        //    var command = new AplicarCupomPedidoCommand(ClienteId, cupomCodigo);
+        //    await _mediatrHandler.EnviarComando(command);
+
+        //    if (OperacaoValida())
+        //        return RedirectToAction("Index");
+
+        //    return View("Index", await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
+        //}
     }
 }

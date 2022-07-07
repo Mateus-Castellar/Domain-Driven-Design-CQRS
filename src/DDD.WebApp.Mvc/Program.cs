@@ -9,6 +9,7 @@ using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Commands;
 using DDD.Vendas.Application.Events;
+using DDD.Vendas.Application.Queries;
 using DDD.Vendas.Data;
 using DDD.Vendas.Data.Repository;
 using DDD.Vendas.Domain;
@@ -46,6 +47,7 @@ builder.Services.AddScoped<INotificationHandler<PedidoItemAdicionadoEvent>, Pedi
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<IPedidosQueries, PedidosQueries>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<CatalogoContext>();
