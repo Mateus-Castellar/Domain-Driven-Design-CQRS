@@ -83,6 +83,7 @@ namespace DDD.Vendas.Application.Commands
 
             pedido.AtualizarUnidades(pedidoItem, message.Quantidade);
             pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
+            pedido.AdicionarEvento(new PedidoProdutoAtualizadoEvent(message.ClienteId, pedido.Id, message.ProdutoId, message.Quantidade));
 
             _pedidoRepository.AtualizarItem(pedidoItem);
             _pedidoRepository.Atualizar(pedido);
@@ -90,9 +91,35 @@ namespace DDD.Vendas.Application.Commands
             return await _pedidoRepository.UnitOfWork.Commit();
         }
 
-        public Task<bool> Handle(RemoverItemPedidoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(RemoverItemPedidoCommand message, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (ValidarComando(message) is false)
+                return false;
+
+            var pedido = await _pedidoRepository.ObterPedidoRascunhoPorClienteId(message.ClienteId);
+
+            if (pedido is null)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "Pedido não encontrado!"));
+                return false;
+            }
+
+            var pedidoItem = await _pedidoRepository.ObterItemPorPedido(pedido.Id, message.ProdutoId);
+
+            if (pedido.PedidoItemExistente(pedidoItem) is false && pedidoItem is not null)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "Item não encontrado no pedido"));
+                return false;
+            }
+
+            pedido.RemoverItem(pedidoItem);
+            pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
+            pedido.AdicionarEvento(new PedidoProdutoRemovidoEvent(message.ClienteId, pedido.Id, message.ProdutoId));
+
+            _pedidoRepository.RemoverItem(pedidoItem);
+            _pedidoRepository.Atualizar(pedido);
+
+            return await _pedidoRepository.UnitOfWork.Commit();
         }
 
         public Task<bool> Handle(AplicarCupomPedidoCommand request, CancellationToken cancellationToken)
