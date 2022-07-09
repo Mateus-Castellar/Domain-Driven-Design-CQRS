@@ -8,7 +8,10 @@ using MediatR;
 
 namespace DDD.Vendas.Application.Commands
 {
-    public class PedidoCommandHandler : IRequestHandler<AdicionarItemPedidoCommand, bool>
+    public class PedidoCommandHandler : IRequestHandler<AdicionarItemPedidoCommand, bool>,
+                                        IRequestHandler<AtualizarItemPedidoCommand, bool>,
+                                        IRequestHandler<RemoverItemPedidoCommand, bool>,
+                                        IRequestHandler<AplicarCupomPedidoCommand, bool>
     {
         private readonly IPedidoRepository _pedidoRepository;
         private readonly IMediatorHandler _mediatorHandler;
@@ -56,6 +59,48 @@ namespace DDD.Vendas.Application.Commands
 
             return await _pedidoRepository.UnitOfWork.Commit();
         }
+
+        public async Task<bool> Handle(AtualizarItemPedidoCommand message, CancellationToken cancellationToken)
+        {
+            if (ValidarComando(message) is false)
+                return false;
+
+            var pedido = await _pedidoRepository.ObterPedidoRascunhoPorClienteId(message.ClienteId);
+
+            if (pedido is null)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "Pedido não encontrado!"));
+                return false;
+            }
+
+            var pedidoItem = await _pedidoRepository.ObterItemPorPedido(pedido.Id, message.ProdutoId);
+
+            if (pedido.PedidoItemExistente(pedidoItem) is false)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "Item não encontrado no pedido"));
+                return false;
+            }
+
+            pedido.AtualizarUnidades(pedidoItem, message.Quantidade);
+            _pedidoRepository.AtualizarItem(pedidoItem);
+            _pedidoRepository.Atualizar(pedido);
+
+            return await _pedidoRepository.UnitOfWork.Commit();
+        }
+
+        public Task<bool> Handle(RemoverItemPedidoCommand request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> Handle(AplicarCupomPedidoCommand request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
 
         private bool ValidarComando(Command message)
         {
