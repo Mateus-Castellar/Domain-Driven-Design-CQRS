@@ -1,4 +1,5 @@
 ﻿using DDD.Core.DomainObjects;
+using FluentValidation.Results;
 
 namespace DDD.Vendas.Domain.Entities
 {
@@ -45,11 +46,18 @@ namespace DDD.Vendas.Domain.Entities
             CalcularValorTotalComDesconto();
         }
 
-        public void AplicarCupom(Cupom cupom)
+        public ValidationResult AplicarCupom(Cupom cupom)
         {
+            //validar se o cupom é valido
+            var validation = cupom.ValidarSeAplicavel();
+
+            if (validation.IsValid is false)
+                return validation;
+
             Cupom = cupom;
             CupomUtilizado = true;
             CalcularValorPedido();
+            return validation;
         }
 
         public void CalcularValorTotalComDesconto()

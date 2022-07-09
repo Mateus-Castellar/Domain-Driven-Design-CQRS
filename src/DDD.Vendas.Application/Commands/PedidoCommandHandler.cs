@@ -122,14 +122,44 @@ namespace DDD.Vendas.Application.Commands
             return await _pedidoRepository.UnitOfWork.Commit();
         }
 
-        public Task<bool> Handle(AplicarCupomPedidoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(AplicarCupomPedidoCommand message, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (ValidarComando(message) is false)
+                return false;
+
+            var pedido = await _pedidoRepository.ObterPedidoRascunhoPorClienteId(message.ClienteId);
+
+            if (pedido is null)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "pedido não encontrado"));
+                return false;
+            }
+
+            var cupom = await _pedidoRepository.ObterCupomPorCodigo(message.CodigoCupom);
+
+            if (cupom is null)
+            {
+                await _mediatorHandler.PublicarNotificacao(new DomainNotification("pedido", "cupom não encontrado"));
+                return false;
+            }
+
+            var CupomAplicacaoValidation = pedido.AplicarCupom(cupom);
+
+            if (CupomAplicacaoValidation.IsValid is false)
+            {
+                foreach (var erro in CupomAplicacaoValidation.Errors)
+                    await _mediatorHandler.PublicarNotificacao(new DomainNotification(erro.ErrorCode, erro.ErrorMessage));
+            }
+
+            pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
+            pedido.AdicionarEvento(new CupomAplicadoPedidoEvent(message.ClienteId, pedido.Id, cupom.Id));
+
+            //TODO: implementar Regra para debitar no banco o cupom
+
+            _pedidoRepository.Atualizar(pedido);
+
+            return await _pedidoRepository.UnitOfWork.Commit();
         }
-
-
-
-
 
         private bool ValidarComando(Command message)
         {
