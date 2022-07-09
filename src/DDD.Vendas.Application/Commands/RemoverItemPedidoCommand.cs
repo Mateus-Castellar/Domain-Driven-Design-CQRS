@@ -6,15 +6,12 @@ namespace DDD.Vendas.Application.Commands
     public class RemoverItemPedidoCommand : Command
     {
         public Guid ClienteId { get; private set; }
-        public Guid PedidoId { get; private set; }
         public Guid ProdutoId { get; private set; }
 
         public RemoverItemPedidoCommand(Guid clienteId,
-                                          Guid pedidoId,
                                           Guid produtoId)
         {
             ClienteId = clienteId;
-            PedidoId = pedidoId;
             ProdutoId = produtoId;
         }
 
@@ -36,10 +33,6 @@ namespace DDD.Vendas.Application.Commands
             RuleFor(c => c.ProdutoId)
                 .NotEqual(Guid.Empty)
                 .WithMessage("Id do produto inválido");
-
-            RuleFor(c => c.PedidoId)
-               .NotEqual(Guid.Empty)
-               .WithMessage("Id do pedido inválido");
         }
     }
 }

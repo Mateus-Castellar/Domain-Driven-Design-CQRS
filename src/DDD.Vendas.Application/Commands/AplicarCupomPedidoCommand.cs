@@ -6,15 +6,12 @@ namespace DDD.Vendas.Application.Commands
     public class AplicarCupomPedidoCommand : Command
     {
         public Guid ClienteId { get; private set; }
-        public Guid PedidoId { get; private set; }
         public string CodigoCupom { get; private set; }
 
         public AplicarCupomPedidoCommand(Guid clienteId,
-                                          Guid pedidoId,
                                           string codigoCupom)
         {
             ClienteId = clienteId;
-            PedidoId = pedidoId;
             CodigoCupom = codigoCupom;
         }
 
@@ -32,10 +29,6 @@ namespace DDD.Vendas.Application.Commands
             RuleFor(c => c.ClienteId)
                 .NotEqual(Guid.Empty)
                 .WithMessage("Id do cliente inválido");
-
-            RuleFor(c => c.PedidoId)
-               .NotEqual(Guid.Empty)
-               .WithMessage("Id do pedido inválido");
 
             RuleFor(c => c.CodigoCupom)
                 .NotEmpty()
