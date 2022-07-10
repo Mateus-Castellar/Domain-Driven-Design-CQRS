@@ -44,8 +44,8 @@ namespace DDD.Pagamentos.Business.Services
 
             if (transacao.StatusTransacao == StatusTransacao.Pago)
             {
-                pagamento.AdicionarEvento(new PagamentoRealizadoEvent(pedido.Id, pagamentoPedido.ClienteId, transacao.PagamentoId,
-                    transacao.Id, pedido.Valor));
+                //pagamento.AdicionarEvento(new PagamentoRealizadoEvent(pedido.Id, pagamentoPedido.ClienteId, transacao.PagamentoId,
+                //transacao.Id, pedido.Valor));
 
                 _pagamentoRepository.Adicionar(pagamento);
                 _pagamentoRepository.AdicionarTransacao(transacao);
@@ -56,8 +56,8 @@ namespace DDD.Pagamentos.Business.Services
 
             //caso a transacao retorne algo diferente de pago..
             await _mediatorHandler.PublicarNotificacao(new DomainNotification("pagamento", "A operadora recusou o pagamento"));
-            await _mediatorHandler.PublicarEvento(new PagamentoRecusadoEvent(pedido.Id, pagamentoPedido.ClienteId, transacao.PagamentoId,
-                transacao.Id, pedido.Valor));
+            //await _mediatorHandler.PublicarEvento(new PagamentoRecusadoEvent(pedido.Id, pagamentoPedido.ClienteId, transacao.PagamentoId,
+            //transacao.Id, pedido.Valor));
 
             return transacao;
         }
