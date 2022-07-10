@@ -57,8 +57,6 @@ namespace DDD.Vendas.Application.Commands
                     _pedidoRepository.AtualizarItem(pedido.PedidoItems.FirstOrDefault(p => p.ProdutoId == pedidoItem.ProdutoId));
                 else
                     _pedidoRepository.AdicionarItem(pedidoItem);
-
-                pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
             }
 
             pedido.AdicionarEvento(new PedidoItemAdicionadoEvent(pedido.ClienteId, pedido.Id, message.ProdutoId,
@@ -89,7 +87,6 @@ namespace DDD.Vendas.Application.Commands
             }
 
             pedido.AtualizarUnidades(pedidoItem, message.Quantidade);
-            pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
             pedido.AdicionarEvento(new PedidoProdutoAtualizadoEvent(message.ClienteId, pedido.Id, message.ProdutoId, message.Quantidade));
 
             _pedidoRepository.AtualizarItem(pedidoItem);
@@ -120,7 +117,6 @@ namespace DDD.Vendas.Application.Commands
             }
 
             pedido.RemoverItem(pedidoItem);
-            pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
             pedido.AdicionarEvento(new PedidoProdutoRemovidoEvent(message.ClienteId, pedido.Id, message.ProdutoId));
 
             _pedidoRepository.RemoverItem(pedidoItem);
@@ -158,7 +154,6 @@ namespace DDD.Vendas.Application.Commands
                     await _mediatorHandler.PublicarNotificacao(new DomainNotification(erro.ErrorCode, erro.ErrorMessage));
             }
 
-            pedido.AdicionarEvento(new PedidoAtualizadoEvent(pedido.ClienteId, pedido.Id, pedido.ValorTotal));
             pedido.AdicionarEvento(new CupomAplicadoPedidoEvent(message.ClienteId, pedido.Id, cupom.Id));
 
             //TODO: implementar Regra para debitar no banco o cupom

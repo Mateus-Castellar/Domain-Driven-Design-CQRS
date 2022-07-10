@@ -21,6 +21,7 @@ using DDD.Vendas.Data;
 using DDD.Vendas.Data.Repository;
 using DDD.Vendas.Domain;
 using DDD.WebApp.Mvc.Data;
+using EventSourcing;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Injecao de dependencias
 // Mediator
 builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
+
+//Event Sourcing
+builder.Services.AddSingleton<IEventStoreService, EventStoreService>();
 
 // Notifications
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
@@ -91,6 +95,7 @@ builder.Services.AddScoped<IConfigurationManager, ConfigurationManager>();
 builder.Services.AddScoped<PagamentosContext>();
 
 builder.Services.AddScoped<INotificationHandler<PedidoEstoqueConfirmadoEvent>, PagamentoEventHandler>();
+
 #endregion
 
 #region Identity
