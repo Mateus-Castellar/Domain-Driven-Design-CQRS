@@ -6,8 +6,10 @@ using DDD.Catalogo.Domain;
 using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Communication.Mediator;
+using DDD.Core.Messages.CommonMessages.IntegrationEvents;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Pagamentos.AntiCorruption;
+using DDD.Pagamentos.Business.Events;
 using DDD.Pagamentos.Business.Interfaces;
 using DDD.Pagamentos.Business.Services;
 using DDD.Pagamentos.Data;
@@ -45,31 +47,50 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #endregion
 
 #region Injecao de dependencias
+// Mediator
 builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
+
+// Notifications
+builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+
+// Catalogo
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<CatalogoContext>();
+
+builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoIniciadoEvent>, ProdutoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoProcessamentoCanceladoEvent>, ProdutoEventHandler>();
+
+// Vendas
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IPedidosQueries, PedidosQueries>();
+builder.Services.AddScoped<VendasContext>();
+
 builder.Services.AddScoped<IRequestHandler<AdicionarItemPedidoCommand, bool>, PedidoCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<AtualizarItemPedidoCommand, bool>, PedidoCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<RemoverItemPedidoCommand, bool>, PedidoCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<AplicarCupomPedidoCommand, bool>, PedidoCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<IniciarPedidoCommand, bool>, PedidoCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<FinalizarPedidoCommand, bool>, PedidoCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<CancelarProcessamentoPedidoCommand, bool>, PedidoCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<CancelarProcessamentoPedidoEstonarEstoqueCommand, bool>, PedidoCommandHandler>();
 
-builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
-builder.Services.AddScoped<INotificationHandler<ProdutoEstoqueAbaixoEvent>, ProdutoEventHandler>();
 builder.Services.AddScoped<INotificationHandler<PedidoRascunhoIniciadoEvent>, PedidoEventHandler>();
-builder.Services.AddScoped<INotificationHandler<PedidoAtualizadoEvent>, PedidoEventHandler>();
-builder.Services.AddScoped<INotificationHandler<PedidoItemAdicionadoEvent>, PedidoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PedidoEstoqueRejeitadoEvent>, PedidoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PagamentoRealizadoEvent>, PedidoEventHandler>();
+builder.Services.AddScoped<INotificationHandler<PagamentoRecusadoEvent>, PedidoEventHandler>();
 
-builder.Services.AddScoped<IProdutoService, ProdutoService>();
+// Pagamento
+builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 builder.Services.AddScoped<IPagamentoCartaoCreditoFacade, PagamentoCartaoCreditoFacade>();
 builder.Services.AddScoped<IPayPalGateway, PayPalGateway>();
 builder.Services.AddScoped<IConfigurationManager, ConfigurationManager>();
-builder.Services.AddScoped<IEstoqueService, EstoqueService>();
-builder.Services.AddScoped<IPedidosQueries, PedidosQueries>();
-builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
-builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
-builder.Services.AddScoped<CatalogoContext>();
-builder.Services.AddScoped<VendasContext>();
 builder.Services.AddScoped<PagamentosContext>();
+
+builder.Services.AddScoped<INotificationHandler<PedidoEstoqueConfirmadoEvent>, PagamentoEventHandler>();
 #endregion
 
 #region Identity
