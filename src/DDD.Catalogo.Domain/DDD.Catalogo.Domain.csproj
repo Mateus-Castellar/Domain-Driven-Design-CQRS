@@ -12,5 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DDD.Core\DDD.Core.csproj" />
+    <ProjectReference Include="..\DDD.Vendas.Application\DDD.Vendas.Application.csproj" />
   </ItemGroup>	
 </Project>

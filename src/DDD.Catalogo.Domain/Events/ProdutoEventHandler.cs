@@ -1,13 +1,15 @@
 ﻿using DDD.Catalogo.Domain.Services;
 using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.IntegrationEvents;
+using DDD.Vendas.Application.Events;
 using MediatR;
 
 namespace DDD.Catalogo.Domain.Events
 {
     public class ProdutoEventHandler :
         INotificationHandler<ProdutoEstoqueAbaixoEvent>,
-        INotificationHandler<PedidoIniciadoEvent>
+        INotificationHandler<PedidoIniciadoEvent>,
+        INotificationHandler<PedidoProcessamentoCanceladoEvent>
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly IEstoqueService _estoqueService;
@@ -37,6 +39,11 @@ namespace DDD.Catalogo.Domain.Events
                     message.ProdutosPedidos, message.NomeCartao, message.NumeroCartao, message.ExpiracaoCartao, message.CvvCartao));
             else
                 await _mediatorHandler.PublicarEvento(new PedidoEstoqueRejeitadoEvent(message.PedidoId, message.ClienteId));
+        }
+
+        public async Task Handle(PedidoProcessamentoCanceladoEvent message, CancellationToken cancellationToken)
+        {
+            await _estoqueService.ReporListaProdutosPedido(message.ProdutosPedido);
         }
     }
 }
