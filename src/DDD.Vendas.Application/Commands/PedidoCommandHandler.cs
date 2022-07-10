@@ -1,5 +1,8 @@
 ﻿using DDD.Core.Communication.Mediator;
+using DDD.Core.DomainObjects.DTO;
+using DDD.Core.Extensions;
 using DDD.Core.Messages;
+using DDD.Core.Messages.CommonMessages.IntegrationEvents;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Events;
 using DDD.Vendas.Domain;
@@ -11,7 +14,8 @@ namespace DDD.Vendas.Application.Commands
     public class PedidoCommandHandler : IRequestHandler<AdicionarItemPedidoCommand, bool>,
                                         IRequestHandler<AtualizarItemPedidoCommand, bool>,
                                         IRequestHandler<RemoverItemPedidoCommand, bool>,
-                                        IRequestHandler<AplicarCupomPedidoCommand, bool>
+                                        IRequestHandler<AplicarCupomPedidoCommand, bool>,
+                                        IRequestHandler<IniciarPedidoCommand, bool>
     {
         private readonly IPedidoRepository _pedidoRepository;
         private readonly IMediatorHandler _mediatorHandler;
@@ -158,6 +162,25 @@ namespace DDD.Vendas.Application.Commands
 
             _pedidoRepository.Atualizar(pedido);
 
+            return await _pedidoRepository.UnitOfWork.Commit();
+        }
+
+        public async Task<bool> Handle(IniciarPedidoCommand message, CancellationToken cancellationToken)
+        {
+            if (ValidarComando(message) is false)
+                return false;
+
+            var pedido = await _pedidoRepository.ObterPedidoRascunhoPorClienteId(message.ClienteId);
+            pedido.IniciarPedido(); //muda o status do pedido para iniciado
+
+            var itensList = new List<Item>();
+            pedido.PedidoItems.ForEach(lbda => itensList.Add(new Item { Id = lbda.Id, Quantidade = lbda.Quantidade }));
+            var listaProdutosPedido = new ListaProdutosPedido { PedidoId = pedido.Id, Itens = itensList, };
+
+            pedido.AdicionarEvento(new PedidoIniciadoEvent(pedido.Id, pedido.ClienteId, pedido.ValorTotal, listaProdutosPedido,
+                message.NomeCartao, message.NumeroCartao, message.ExpiracaoCartao, message.CvvCartao));
+
+            _pedidoRepository.Atualizar(pedido);
             return await _pedidoRepository.UnitOfWork.Commit();
         }
 

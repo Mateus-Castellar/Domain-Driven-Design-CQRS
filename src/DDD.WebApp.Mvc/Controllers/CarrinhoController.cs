@@ -3,6 +3,7 @@ using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Vendas.Application.Commands;
 using DDD.Vendas.Application.Queries;
+using DDD.Vendas.Application.Queries.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -104,6 +105,30 @@ namespace DDD.WebApp.Mvc.Controllers
                 return RedirectToAction("Index");
 
             return View("Index", await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
+        }
+
+        [HttpGet]
+        [Route("resumo-da-compra")]
+        public async Task<IActionResult> ResumoDaCompra()
+        {
+            return View(await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
+        }
+
+        [HttpPost]
+        [Route("iniciar-pedido")]
+        public async Task<IActionResult> IniciarPedido(CarrinhoDTO carrinhoDTO)
+        {
+            var carrinho = await _pedidoQueries.ObterCarrinhoCliente(ClienteId);
+
+            var command = new IniciarPedidoCommand(carrinho.PedidoId, ClienteId, carrinho.ValorTotal,
+                carrinhoDTO.Pagamento.NomeCartao, carrinhoDTO.Pagamento.NumeroCartao, carrinhoDTO.Pagamento.ExpiracaoCartao, carrinhoDTO.Pagamento.CvvCartao);
+
+            await _mediatrHandler.EnviarComando(command);
+
+            if (OperacaoValida())
+                return RedirectToAction("Index", "Pedido");
+
+            return View("ResumoDaCompra", await _pedidoQueries.ObterCarrinhoCliente(ClienteId));
         }
     }
 }

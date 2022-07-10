@@ -26,4 +26,11 @@
     <ProjectReference Include="..\DDD.Vendas.Data\DDD.Vendas.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Carrinho\ResumoDaCompra.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
