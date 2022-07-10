@@ -7,6 +7,11 @@ using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Communication.Mediator;
 using DDD.Core.Messages.CommonMessages.Notifications;
+using DDD.Pagamentos.AntiCorruption;
+using DDD.Pagamentos.Business.Interfaces;
+using DDD.Pagamentos.Business.Services;
+using DDD.Pagamentos.Data;
+using DDD.Pagamentos.Data.Repository;
 using DDD.Vendas.Application.Commands;
 using DDD.Vendas.Application.Events;
 using DDD.Vendas.Application.Queries;
@@ -17,6 +22,7 @@ using DDD.WebApp.Mvc.Data;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ConfigurationManager = DDD.Pagamentos.AntiCorruption.ConfigurationManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +36,9 @@ builder.Services.AddDbContext<CatalogoContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContext<VendasContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<PagamentosContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -49,12 +58,18 @@ builder.Services.AddScoped<INotificationHandler<PedidoAtualizadoEvent>, PedidoEv
 builder.Services.AddScoped<INotificationHandler<PedidoItemAdicionadoEvent>, PedidoEventHandler>();
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IPagamentoService, PagamentoService>();
+builder.Services.AddScoped<IPagamentoCartaoCreditoFacade, PagamentoCartaoCreditoFacade>();
+builder.Services.AddScoped<IPayPalGateway, PayPalGateway>();
+builder.Services.AddScoped<IConfigurationManager, ConfigurationManager>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IPedidosQueries, PedidosQueries>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 builder.Services.AddScoped<CatalogoContext>();
 builder.Services.AddScoped<VendasContext>();
+builder.Services.AddScoped<PagamentosContext>();
 #endregion
 
 #region Identity
