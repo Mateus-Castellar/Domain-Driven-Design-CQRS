@@ -6,6 +6,7 @@ using DDD.Catalogo.Domain;
 using DDD.Catalogo.Domain.Events;
 using DDD.Catalogo.Domain.Services;
 using DDD.Core.Communication.Mediator;
+using DDD.Core.Data.EventSourcing;
 using DDD.Core.Messages.CommonMessages.IntegrationEvents;
 using DDD.Core.Messages.CommonMessages.Notifications;
 using DDD.Pagamentos.AntiCorruption;
@@ -22,6 +23,7 @@ using DDD.Vendas.Data.Repository;
 using DDD.Vendas.Domain;
 using DDD.WebApp.Mvc.Data;
 using EventSourcing;
+using EventSourcing.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -53,6 +55,7 @@ builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
 
 //Event Sourcing
 builder.Services.AddSingleton<IEventStoreService, EventStoreService>();
+builder.Services.AddSingleton<IEventSourcingRepository, EventSourcingRepository>();
 
 // Notifications
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();

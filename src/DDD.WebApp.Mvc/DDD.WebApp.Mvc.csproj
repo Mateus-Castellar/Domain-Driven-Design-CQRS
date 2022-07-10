@@ -27,6 +27,7 @@
     <ProjectReference Include="..\DDD.Pagamentos.Data\DDD.Pagamentos.Data.csproj" />
     <ProjectReference Include="..\DDD.Vendas.Application\DDD.Vendas.Application.csproj" />
     <ProjectReference Include="..\DDD.Vendas.Data\DDD.Vendas.Data.csproj" />
+    <ProjectReference Include="..\EventSourcing\EventSourcing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
