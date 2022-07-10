@@ -6,4 +6,8 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DDD.Pagamentos.Business\DDD.Pagamentos.Business.csproj" />
+  </ItemGroup>
+
 </Project>

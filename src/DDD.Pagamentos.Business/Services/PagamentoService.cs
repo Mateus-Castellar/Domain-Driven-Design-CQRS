@@ -54,7 +54,7 @@ namespace DDD.Pagamentos.Business.Services
                 return transacao;
             }
 
-            //caso transacao retorne diferente de pago..
+            //caso a transacao retorne algo diferente de pago..
             await _mediatorHandler.PublicarNotificacao(new DomainNotification("pagamento", "A operadora recusou o pagamento"));
             await _mediatorHandler.PublicarEvento(new PagamentoRecusadoEvent(pedido.Id, pagamentoPedido.ClienteId, transacao.PagamentoId,
                 transacao.Id, pedido.Valor));
