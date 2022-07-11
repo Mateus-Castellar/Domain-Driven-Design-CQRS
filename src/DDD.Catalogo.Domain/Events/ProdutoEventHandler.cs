@@ -35,7 +35,7 @@ namespace DDD.Catalogo.Domain.Events
             var sucesso = await _estoqueService.DebitarListaProdutosPedido(message.ProdutosPedidos);
 
             if (sucesso)
-                await _mediatorHandler.PublicarEvento(new PedidoEstoqueConfirmadoEvent(message.ClienteId, message.ClienteId, message.Total,
+                await _mediatorHandler.PublicarEvento(new PedidoEstoqueConfirmadoEvent(message.PedidoId, message.ClienteId, message.Total,
                     message.ProdutosPedidos, message.NomeCartao, message.NumeroCartao, message.ExpiracaoCartao, message.CvvCartao));
             else
                 await _mediatorHandler.PublicarEvento(new PedidoEstoqueRejeitadoEvent(message.PedidoId, message.ClienteId));

@@ -55,7 +55,8 @@ namespace DDD.Vendas.Application.Commands
                 .WithMessage("O nome do cartão não foi fornecido");
 
             RuleFor(c => c.NomeCartao)
-                .CreditCard()
+                //.CreditCard()
+                .NotEmpty()
                 .WithMessage("Número de cartão de crédito inválido");
 
             RuleFor(c => c.ExpiracaoCartao)

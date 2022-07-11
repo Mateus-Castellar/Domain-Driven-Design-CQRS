@@ -66,6 +66,7 @@ namespace DDD.Vendas.Application.Queries
             {
                 pedidosView.Add(new PedidoDTO
                 {
+                    Id = pedido.Id,
                     Codigo = pedido.Codigo,
                     DataCadastro = pedido.DataCadastro,
                     PedidoStatus = (int)pedido.PedidoStatus,

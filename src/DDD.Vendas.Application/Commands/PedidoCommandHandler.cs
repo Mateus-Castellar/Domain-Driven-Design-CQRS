@@ -172,7 +172,7 @@ namespace DDD.Vendas.Application.Commands
             pedido.IniciarPedido(); //muda o status do pedido para iniciado
 
             var itensList = new List<Item>();
-            pedido.PedidoItems.ForEach(lbda => itensList.Add(new Item { Id = lbda.Id, Quantidade = lbda.Quantidade }));
+            pedido.PedidoItems.ForEach(lbda => itensList.Add(new Item { Id = lbda.ProdutoId, Quantidade = lbda.Quantidade }));
             var listaProdutosPedido = new ListaProdutosPedido { PedidoId = pedido.Id, Itens = itensList, };
 
             pedido.AdicionarEvento(new PedidoIniciadoEvent(pedido.Id, pedido.ClienteId, pedido.ValorTotal, listaProdutosPedido,

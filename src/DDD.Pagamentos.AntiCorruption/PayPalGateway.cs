@@ -12,7 +12,8 @@
         public bool CommitTransaction(string cardHaskKey, string orderId, decimal amount)
         {
             //50% de chance para dar certo ou errado (pagamento)
-            return new Random().Next(2) == 0;
+            //return new Random().Next(2) == 0;
+            return true;
         }
 
         public string GetCardHashKey(string serviceKey, string cartaoCredito)
